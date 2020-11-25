@@ -121,25 +121,9 @@ def load_normalized_test_case(test_image, pagelocked_buffer):
     np.copyto(pagelocked_buffer, normalize_image(Image.open(test_image)))
     return test_image
 
-def test_output(tensor_rt_output, test_image):
-    print('TensorRT Predicted:', decode_predictions(preds, top=3)[0])
-
-
-    img_path = test_image
-    img = image.load_img(img_path, target_size=(224, 224))
-    x = image.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    x = preprocess_input(x)
-    from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2 as Net
-    model = Net(weights='imagenet')
-    preds = model.predict(x)
-
-
-    print('Keras Predicted:', decode_predictions(preds, top=3)[0])
-
 
 def main():
-    data_dir = '/home/gecl/keras_tensorrt_inference/mobilenetv2'
+    data_dir = './mobilenetv2'
     # Set the data path to the directory that contains the trained models and test images for inference.
     _, data_files = common.find_sample_data(description="Runs a MobileNetV2 network with a TensorRT inference engine.", subfolder="mobilenetv2", find_files=["binoculars.jpeg", "reflex_camera.jpeg", "tabby_tiger_cat.jpg", ModelData.MODEL_PATH, "class_labels.txt"], data_dir=data_dir)
     # Get test images, models and labels.
@@ -167,15 +151,7 @@ def main():
             end = time.time()
             print(f'Performed tensorRT inference in: {end - start} sec')
 
-            # print(h_output)
             pred = labels[np.argmax(h_output)]
-            # print(pred)
-            # import json
-            # with open('imagenet_class_index.json') as f:
-            #     labels = json.load(f)
-
-            # print(labels[str(pred)])
-            # test_output(h_output, test_image)
             # We use the highest probability as our prediction. Its index corresponds to the predicted label.
 
             if "_".join(pred.split()) in os.path.splitext(os.path.basename(test_case))[0]:
