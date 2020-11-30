@@ -12,8 +12,6 @@ Note that in input and output nodes' names are printed.  If you use a different 
 
 For this example, `$ python3 run_mobilenetv2.py`, which loads the model from UFF and runs inference on a random image in the folder.
 
-However, it appears that the output is incorrect, when compared to the original Keras model.
-
 You can see the Keras model predictions with:
 
 ```
@@ -36,6 +34,3 @@ preds = model.predict(x)
 # (one such list for each sample in the batch)
 print('Predicted:', decode_predictions(preds, top=3)[0])
 ```
-
-See this TensorRT thread on the issue:
-https://github.com/NVIDIA/TensorRT/issues/375
