@@ -55,7 +55,7 @@ import numpy as np
 import pycuda.driver as cuda
 # This import causes pycuda to automatically manage CUDA context creation and cleanup.
 import pycuda.autoinit
-
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input, decode_predictions
 import tensorrt as trt
 
 import sys, os
@@ -115,7 +115,9 @@ def load_normalized_test_case(test_image, pagelocked_buffer):
     def normalize_image(image):
         # Resize, antialias and transpose the image to CHW.
         c, h, w = ModelData.INPUT_SHAPE
-        return np.asarray(image.resize((w, h), Image.ANTIALIAS)).transpose([2, 0, 1]).astype(trt.nptype(ModelData.DTYPE)).ravel()
+        x = np.asarray(image.resize((w, h), Image.ANTIALIAS)).transpose([2, 0, 1])
+        x = preprocess_input(x)
+        return x.astype(trt.nptype(ModelData.DTYPE)).ravel()
 
     # Normalize the image and copy to pagelocked memory.
     np.copyto(pagelocked_buffer, normalize_image(Image.open(test_image)))
